@@ -1,0 +1,152 @@
+<?php
+	$graphSize = new StdClass;
+	$graphSize->x = 480;
+	$graphSize->y = 300;
+?>
+
+<?php
+	// sort rooms by their name
+	$rooms = $this->rooms;
+	$alphaRooms = array();
+	foreach ( $this->rooms as $index => $room ) {
+		$alphaRooms[$index] = $room['title'];
+	}
+	asort($alphaRooms);
+	$sortedRooms = array();
+	foreach ( $alphaRooms as $index => $dummy ) {
+		$sortedRooms[] = $this->rooms[$index];
+	}
+	$this->rooms = $sortedRooms;
+?>
+
+<?php
+
+	$roomSelection = 'Raumzuordnung: <select class="room" onchange="updateRoomAssignment($(this));">';
+	$roomSelection .= '<option value=""></option>';
+	foreach ( $this->rooms as $data ) {
+		$roomSelection .= '<option value="' . $data['serial'] . '">' . $data['title'] . '</option>';
+	}
+	$roomSelection .= '</select>';
+?>
+
+
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-dashboard">Dashboard</a></li>
+        <li><a href="#tabs-rooms">Räume</a></li>
+        <li><a href="#tabs-devices">Thermostate & Co.</a></li>
+        <li><a href="#tabs-log">Log</a></li>
+    </ul>
+
+    <div id="tabs-dashboard">
+
+		<?php foreach ( $this->rooms as $data ): ?>
+		 <div class="box" style="float: left;">
+		  <h2><?php echo $data['title'] ?></h2>
+		  <div class="status" serial="<?php echo $data['serial'] ?>">
+		   <h3><span class="tempCurrent">0.0</span>°C <small>/ <span class="tempTarget">0.0</span>°C</small></h3>
+		   <div class="tempLatest"></div>
+		   <div class="valveOpening"></div>
+		  </div>
+		 </div>
+		<?php endForeach; ?>
+		<br style="clear: both" />
+
+    </div>
+
+    <div id="tabs-devices">
+	 <div id="device-list">
+		<?php foreach ( $this->valves as $data ): ?>
+		 <div class="graph" style="width: <?php echo $graphSize->x ?>px; height: <?php echo $graphSize->y + 80  ?>px; float: left;">
+		  <h2><?php echo $data['title'] ?> <small>| <?php echo $roomSelection ?></small></h2>
+		  <div class="plot valve" serial="<?php echo $data['serial'] ?>" style="width:<?php echo $graphSize->x ?>px;height:<?php echo $graphSize->y ?>px;"></div>
+		 </div>
+		<?php endForeach; ?>
+
+		<?php foreach ( $this->windows as $data ): ?>
+		 <div class="graph" style="width: <?php echo $graphSize->x ?>px; height: <?php echo $graphSize->y + 80  ?>px; float: left;">
+		  <h2><?php echo $data['title'] ?> <small>| <?php echo $roomSelection ?></small></h2>
+		  <div class="plot window" serial="<?php echo $data['serial'] ?>" style="width:<?php echo $graphSize->x ?>px;height:<?php echo $graphSize->y ?>px;"></div>
+		 </div>
+		<?php endForeach; ?>
+
+		<?php foreach ( $this->weather as $data ): ?>
+		 <div class="graph" style="width: <?php echo $graphSize->x ?>px; height: <?php echo $graphSize->y + 80  ?>px; float: left;">
+		  <h2><?php echo $data['title'] ?> <small>| <?php echo $roomSelection ?></small></h2>
+		  <div class="plot window" serial="<?php echo $data['serial'] ?>" style="width:<?php echo $graphSize->x ?>px;height:<?php echo $graphSize->y ?>px;"></div>
+		 </div>
+		<?php endForeach; ?>
+	 </div>
+	 <br style="clear: both" />
+
+    </div>
+
+
+    <div id="tabs-rooms">
+
+		<?php foreach ( $this->rooms as $data ): ?>
+		 <div class="graph" style="width: <?php echo $graphSize->x ?>px; height: <?php echo $graphSize->y + 80 ?>px; float: left;">
+		  <h2><?php echo $data['title'] ?></h2>
+		  <div class="plot" serial="<?php echo $data['serial'] ?>" style="width:<?php echo $graphSize->x ?>px;height:<?php echo $graphSize->y ?>px;"></div>
+		 </div>
+		<?php endForeach; ?>
+
+		<br style="clear: both" />
+
+    </div>
+    
+    <div id="tabs-log">
+    	… Taster betätigt, Fenster geöffnet (geschlossen + dauer), manuelle Temepraturänderung, etc.
+    </div>
+
+</div>
+
+
+<span class="updateTime"></span>
+<div class="timeframe">
+	<div>
+	 <input type="text" id="timeStart" style="width: 90px; text-align: center;" /> - <input type="text" id="timeEnd" style="width: 90px; text-align: center;" />
+	</div>
+	<div id="calStart" style="float: left;"></div>
+	<div id="calEnd" style="float: left;"></div>
+</div>
+
+
+<script>
+$(function() {
+	$("#tabs").tabs({selected: 0});
+	$('#calStart, #calEnd').hide();
+	$('#timeStart, #timeEnd').bind('focus', function () {
+		$('#calStart, #calEnd').fadeIn();
+	});
+	$('#timeStart, #timeEnd').bind('blur', function () {
+		$('#calStart, #calEnd').fadeOut();
+	});
+	$('#calStart').datepicker({
+		defaultDate: "-1d",
+		altField: "#timeStart",
+		altFormat: "yy-mm-dd",
+		maxDate: "-1d",
+		onSelect: function( selectedDate ) {
+			$( "#calEnd" ).datepicker( "option", "minDate", selectedDate );
+			setStartTime( $(this).datepicker("getDate").getTime() / 1000 );
+		}
+	});
+	$('#calEnd').datepicker({
+		defaultDate: "",
+		altField: "#timeEnd",
+		altFormat: "yy-mm-dd",
+		minDate: "+0d",
+		onSelect: function( selectedDate ) {
+			$( "#calStart" ).datepicker( "option", "maxDate", selectedDate );
+			setEndTime( $(this).datepicker("getDate").getTime() / 1000 );
+		}
+    });
+
+
+
+	$(document).ready(function() {
+		initAutoUpdate();
+	});
+});
+</script>

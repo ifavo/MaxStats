@@ -1,0 +1,126 @@
+body {
+}
+
+div.graph {
+	position: relative;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+div.graph h2.rotate {
+	-webkit-transform: rotate(-90deg); 
+	-moz-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 250px;
+	height: 250px;
+	text-align: center;
+	text-shadow: #eee -1px -1px 0px;
+}
+
+div.graph .plot {
+	margin: 0px 20px 20px 40px;
+}
+
+.box {
+	border-radius: 15px;
+	border: 1px solid #000;
+	background-color: rgba(35,35,35,0.90);
+	padding: 10px;
+	font-size: 10px;
+	width: 160px;
+	height: 110px;
+	overflow: hidden;
+	margin: 10px;
+}
+
+.box h2 {
+	font-size: 20px;
+	line-height: 22px;
+	margin: 0;
+	white-space: nowrap;
+	color: #999;
+	text-shadow: #000 -1px -1px 0px;
+}
+
+.box h3 {
+	font-size: 24px;
+	line-height: 40px;
+	margin: 0;
+	color: #eee;
+	text-shadow: #000 -1px -1px 0px;
+}
+
+.box small {
+	font-size: 10px;
+}
+
+.box .tempLatest {
+	color: #999;
+	font-style: italic;
+}
+
+.box .valveOpening {
+	color: #999;
+	font-style: italic;
+}
+
+.box.directionUp .valveOpening, .box.directionDown .valveOpening {
+	color: #ddd;
+}
+
+.box .windowOpening {
+	color: #EEE;
+	font-style: normal;
+	text-transform: uppercase;
+	text-shadow: black 3px 3px 10px;
+}
+
+.box.directionUp .windowOpening {
+	color: #FFF;
+}
+
+.box.directionDown .windowOpening {
+	color: #AFF;
+}
+
+.box.directionUp {
+	background-color: rgba(137,35,35,0.90);
+}
+
+.box.directionDown {
+	background-color: rgba(35,52,86,0.90);
+}
+
+span.updateTime {
+	position: fixed;
+	right: -2px;
+	bottom: -2px;
+	text-align: right;
+	border: 1px solid #CCC;
+	background-color: rgba(128, 128, 128, 0.5);
+	color: rgba(0, 0, 0, 0.75);
+	font-size: 11px;
+	padding: 0 5px 0 5px;
+	border-radius: 3px;
+}
+
+.warm {
+	color: #f00;
+	font-weight: bold;
+}
+
+.cold {
+	color: #00f;
+	font-weight: bold;
+}
+
+div.timeframe {
+	position: absolute;
+	right: 10px;
+	top: 50px;
+	text-align: right;
+}
