@@ -1,6 +1,8 @@
 MaxStats
 ========
 
+( Publiziert auf Anfragen in http://bugs.maxbuddy.de/boards/1/topics/218 )
+
 Max!Buddy Exporte werden als Grundlage genommen und können wahlweise über die Startseite hochgeladen werden oder via Shell-Befehle.
 
 - Geräte werden automatisch einem Cube zugeordnet und über den Cube können dessen Statistiken abgerufen werden.
