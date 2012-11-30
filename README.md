@@ -41,5 +41,5 @@ Das gesamte Konstrukt wurde schnell zusammen gestellt und ist (noch) nicht für 
 
 ### Cube-Schnittstelle in PHP:
 
-Es gibt einen Ansatz für eine PHP Klasse die direkt aus dem Cube die Daten ausliest, zu finden unter `library/favo/Max/Cube.php`. Das ist noch ziemlich sehr erfolgreich und recht zu Beginn und ich weiss auch nicht ob ich das weiterverfolgen möchte :-)
+Es gibt einen Ansatz für eine PHP Klasse die direkt aus dem Cube die Daten ausliest, zu finden unter `library/favo/Max/Cube.php`. Das ist noch nicht sehr erfolgreich und ich weiss auch nicht ob ich das weiterverfolgen möchte :-)
 Vielleicht findet sich jemand anderer der die Klasse ausbauen möchte. Als Grundlage diente dafür http://www.domoticaforum.eu/viewtopic.php?f=66&t=6654#p50589
