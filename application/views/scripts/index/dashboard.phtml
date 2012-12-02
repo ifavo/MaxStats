@@ -95,7 +95,7 @@ $(function() {
 	}
 
 	building.rooms['legend'] = {data:{},valves:[],shutter:[]};
-	var container = $('<div>').attr('serial', 'legend').addClass('graph').css({width: '100%', height: 450});
+	var container = $('<div>').attr('serial', 'legend').addClass('graph').addClass('legend').css({width: '100%', height: 450});
 	$('<h2>').addClass('rotate').text('Legende').appendTo(container);
 	$('body').append(container);
 	$('<div>').addClass('plot').css({width: container.width()-100, height: 400}).appendTo(container);

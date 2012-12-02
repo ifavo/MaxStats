@@ -144,6 +144,17 @@ div#overview {
 	font-size: 10px;
 }
 
+/**
+ * legend
+ */
+.graph.legend > .plot > .legend > table {
+	width: 250px;
+}
+
+.graph.legend > .plot > .overlay, .graph.legend > .plot > .base, .graph.legend > .plot > .tickLabels {
+	display: none;
+}
+
 /* iPhone [portrait + landscape] */
 @media only screen and (max-device-width: 480px) {
 	div#overview {
