@@ -3,11 +3,11 @@ MaxStats
 
 ( Publiziert auf Anfragen in http://bugs.maxbuddy.de/boards/1/topics/218 )
 
-Max!Buddy Exporte werden als Grundlage genommen und können wahlweise über die Startseite hochgeladen werden oder via Shell-Befehle.
+Max!Buddy Exporte werden als Grundlage genommen und können automatisch über einen Web-Export importiert werden:
 
 - Geräte werden automatisch einem Cube zugeordnet und über den Cube können dessen Statistiken abgerufen werden.
 - Neue Geräte werden automatisch erkannt und hinzugefügt.
-- Raumzuordnung fehlen im Export, daher müssen diese manuell über ein Auswahlfeld in der Statistik `/index/stats` erst vorgenommen werden.
+- Raumzuordnungen geschehen automatisch und werden bei jedem Import aktualisiert
 - Eine Installation kann für mehrere Cubes (User) verwendet werden, durch die automatisierte Cube-Zuweisung kann man also eine Installation mit anderen "teilen" :-)
 - Die HTML Ausgabe ist für meinen Chrome unter OSX optimiert, andere Browser laufen eventuell nicht so gut.
 
@@ -19,21 +19,15 @@ Max!Buddy Exporte werden als Grundlage genommen und können wahlweise über die 
 
 Das ganze kann man sich hier einmal ansehen: http://max.t-0.eu/index/dashboard/cubes/JEQ0193016
 
-Mein eigener minütlicher Upload läuft als Shell-Script nach jedem Max!Buddy Export wie folgt ab:
-
-    # max buddy export upload
-    cd ~/ExportVerzeichns/
-    curl http://max.t-0.eu/ --form file=@max-buddy.export --form submit=submit -s
-    rm max-buddy.export
-
-
 ### Zur Inbetriebnahme:
 
 1. Konfiguration der Datenbank in `application/configs/application.ini`
 2. Datenbank-Dump einspielen, zu finden unter `library/favo/Max/Model/dump.mysql.sql`
-3. Das `data/upload` Verzeichnis muss Schreiberechtigung durch den Webserver haben, da hier die Uploads hin geladen werden
+3. Das `data/upload` Verzeichnis muss Schreiberechtigung durch den Webserver haben, da hier eventuelle Uploads hin geladen werden
 4. Das Zend-Framework 1 wird benötigt (egal welche 1.x Version), bitte separat laden: http://framework.zend.com/downloads/latest#ZF1
-5. Viel Spaß!
+5. `/cube/export` als URL für den Datenexport in Max!Buddy hinterlegen (Z.B. `http://max.t-0.eu/cube/export`)
+6. `/index/cube` aufrufen und den eigenen Cube auswählen um die Statistik zu öffnen
+7. Viel Spaß!
 
 ### Allgemeiner Hinweis:
 
