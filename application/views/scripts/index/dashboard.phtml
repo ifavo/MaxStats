@@ -402,15 +402,15 @@ function updateRoomPlot(roomSerial) {
 	}
 
 
-	if ( roomSerial == "legend" || !dataPoints.tempMeasured.length ) {
-		return;
-	}
-
 
 	// room box
 	// no measured temp but outside temp? copy it over for outside information!
 	if ( !dataPoints.tempMeasured.length && dataPoints.outsideTemperature.length > 0 ) {
 		dataPoints.tempMeasured = dataPoints.tempTarget = dataPoints.outsideTemperature;
+	}
+
+	if ( roomSerial == "legend" || !dataPoints.tempMeasured.length ) {
+		return;
 	}
 
 	$('.status[serial='+roomSerial+']').parent().removeClass('directionUp').removeClass('directionDown');
