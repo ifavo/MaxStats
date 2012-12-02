@@ -59,8 +59,9 @@ if ( cubes == 'JEQ0193016' ) {
 	specialDevices.push('ash2200_1');
 }
 timeToDisplay = (!timeToDisplay) ? 24 : timeToDisplay;
-var tsStart = (new Date().getTime() - (timeToDisplay*60*60*1000))/1000;
+var tsStart = (new Date().getTime() - (timeToDisplay*60*60*1000));
 var tsEnd = tsStart;
+var tsOffset = new Date().getTimezoneOffset()*60;
 var spinnerOptions = {
   lines: 5, // The number of lines to draw
   length: 15, // The length of each line
@@ -132,7 +133,7 @@ function fetchUpdate () {
 			}
 		}
 
-		updateQueue.push({serial: serials, from: tsStart});
+		updateQueue.push({serial: serials, from: (tsStart+(tsOffset*1000))/1000});
 	}
 	
 	workQueue();
@@ -209,7 +210,7 @@ function updateRoomPlot(roomSerial) {
 				row.time = Number(row.time);
 				var ts = row.time * 1000;
 				if ( ts > tsStart ) {
-					tsStart = row.time * 1000; // latest data timestamp to get diff from
+					tsStart = ts; // latest data timestamp to get diff from
 					tsEnd = row.time; // latest update timestamp
 				}
 				
