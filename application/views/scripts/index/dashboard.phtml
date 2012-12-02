@@ -488,7 +488,7 @@ function plotHover (event, pos, item) {
 				var x = item.datapoint[0].toFixed(0),
 					y = item.datapoint[1];
 				if ( item.series.tickFormatter ) {
-					y = item.series.tickFormatter(y, 0);
+					y = item.series.tickFormatter(y, {tickDecimals: 1});
 				}
 				var xDate = new Date();
 				xDate.setTime(x)
