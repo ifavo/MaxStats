@@ -184,11 +184,17 @@ class IndexController extends Zend_Controller_Action {
 	
 	public function cubeAction () {
     	$form = new Zend_Form();
-		$cubes = new Zend_Form_Element_Text('cubes');
-		$cubes->setLabel('Cube(s):')->setValue('JEQ0193016');
+		$cubes = new Zend_Form_Element_Select('cubes');
+		$cubes->setLabel('Cube(s):');
+		
+		$cubeList = $this->getMax()->getCubes();
+		foreach ($cubeList as $cubeSerial) {
+			$cubes->addMultiOption($cubeSerial, $cubeSerial);
+		}
+		
 		$submit = new Zend_Form_Element_Submit('submit');
 		$form->addElements(array($cubes, $submit));
-		$form->setAction('/index/dashboard');
+		$form->setAction('/index/dashboard')->setMethod('GET');
 		EasyBib_Form_Decorator::setFormDecorator($form, EasyBib_Form_Decorator::BOOTSTRAP, 'submit');
 		$this->view->form = $form;
 	}

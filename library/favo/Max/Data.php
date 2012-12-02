@@ -435,4 +435,14 @@ class favo_Max_Data {
 		$device->current()->save();
 		return true;
 	}
+	
+	public function getCubes () {
+		$devices = new favo_Max_Model_Device();
+		$deviceList = $devices->fetchAll();
+		$cubes = array();
+		foreach ($deviceList as $device) {
+			$cubes[$device->cube] = true;
+		}
+		return array_keys($cubes);
+	}
 }
