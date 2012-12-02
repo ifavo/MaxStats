@@ -184,10 +184,15 @@ div#overview {
 @media only screen and (max-device-width: 480px) {
 	div#overview {
 		position: relative;
+		padding-top: 60px;
 	}
 	
 	body {
 		padding-top: 0 !important;
+	}
+	
+	div.graph, div.graph .plot {
+		margin-right: 0px;
 	}
 
 	div.graph h2.rotate {
