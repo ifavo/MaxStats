@@ -13,9 +13,16 @@ class favo_Max_Data {
 									'humidity' => 'humidity'
 							);
 	
-	public function __construct($csv = null) {
-		if ( $csv ) {
-			$this->importFile($csv);
+	public function __construct() {
+		$this->modelDevice = new favo_Max_Model_Device();
+		$this->modelHistory = new favo_Max_Model_Device_History();
+
+		// auto setup on first call
+		$setupFile = '.setup.' . get_class($this);
+		if ( !file_exists($setupFile) ) {
+			$this->modelDevice->setupTable();
+			$this->modelHistory->setupTable();
+			file_put_contents($setupFile, time());
 		}
 	}
 
@@ -27,7 +34,6 @@ class favo_Max_Data {
 	public function importStatus ($status) {
 		// init some vars
 		$deviceList = array();
-		$history = new favo_Max_Model_Device_History();
 
 		// convert into a nice readable array
 		$data = array();
@@ -69,7 +75,7 @@ class favo_Max_Data {
 			
 			// put data into history, blindly
 			try {
-				$historyEntry = $history->createRow();
+				$historyEntry = $this->modelHistory->createRow();
 				$historyEntry->pk = $device['Serial'] . '_' . $ts;
 				$historyEntry->serial = $device['Serial'];
 				$historyEntry->time = $ts;
@@ -86,17 +92,16 @@ class favo_Max_Data {
 		$cubeList = array();
 
 		// update device list in database
-		$devices = new favo_Max_Model_Device();
 		foreach ( $deviceList as $serial => $deviceData ) {
-			$device = $devices->find($serial);
+			$device = $this->modelDevice->find($serial);
 			if ( !count($device) ) {
-				$device = $devices->createRow();
+				$device = $this->modelDevice->createRow();
 			}
 			else {
 				$device = $device->current();
 			}
 			
-			if ( $deviceData['RoomID'] ) {
+			if ( isset($deviceData['RoomID']) && $deviceData['RoomID'] ) {
 				$device->roomAssignment = $data['Cube']['Serial'] . '_Room_' . $deviceData['RoomID'];
 			}
 			
@@ -133,16 +138,15 @@ class favo_Max_Data {
 		}
 
 		// import the uploaded data
-		$history = new favo_Max_Model_Device_History();
 		try {
-			$historyEntry = $history->createRow();
+			$historyEntry = $this->modelHistory->createRow();
 			$historyEntry->pk = $serial . '_' . $ts;
 			$historyEntry->serial = $serial;
 			$historyEntry->time = $ts;
 			$historyEntry->data = serialize($data->list[0]);
 			$historyEntry->save();
-			if ( is_array($title) && $title[($i-$indexOffset+1)] ) {
-				$title[$historyEntry->serial] = $title[($i-$indexOffset+1)];
+			if ( is_array($title) && $title[1] ) {
+				$title[$historyEntry->serial] = $title[1];
 			}
 		}
 		catch (Exception $e) {
@@ -151,17 +155,16 @@ class favo_Max_Data {
 
 
 		// update device data
-		$devices = new favo_Max_Model_Device();
-		$device = $devices->find($serial);
+		$device = $this->modelDevice->find($serial);
 		if ( !count($device) ) {
-			$device = $devices->createRow();
+			$device = $this->modelDevice->createRow();
 		}
 		else {
 			$device = $device->current();
 		}
 		$device->serial = $serial;
 		$device->type = 'OpenWeather';
-		$device->title = ($title && $title[$deviceSerial]) ? $title[$deviceSerial] : 'OpenWeather Import';
+		$device->title = ($title && isset($title[$serial]) && $title[$serial]) ? $title[$serial] : 'OpenWeather Import';
 		$device->cube = $cube;
 		$device->lastUpdate = new Zend_Db_Expr('NOW()');
 		$device->save();
@@ -174,7 +177,6 @@ class favo_Max_Data {
 
 		$fh = fopen ($file, 'r');
 		$deviceData = array();
-		$history = new favo_Max_Model_Device_History();
 		$deviceList = array();
 		while ( $row = fgetcsv($fh, 0, ';') ) {
 
@@ -183,10 +185,14 @@ class favo_Max_Data {
 				$indexOffset = 3;
 				$ts = time();
 			}
-			else /* if ( strpos($row[0] == ', ') !== FALSE ) */ {
+			else if ( strpos($row[0], ', ') !== FALSE ) {
 				$indexOffset = 1;
 				$time = explode(', ', $row[0]);
 				$ts = strtotime($time[0] . ' ' . $time[1]);
+			}
+			else {
+				$indexOffset = 1;
+				$ts = strtotime($row[0]);
 			}
 
 			for ( $i = $indexOffset; $i < ($indexOffset+8); $i++ ) {
@@ -202,7 +208,7 @@ class favo_Max_Data {
 							);
 				// import the uploaded data
 				try {
-					$historyEntry = $history->createRow();
+					$historyEntry = $this->modelHistory->createRow();
 					$historyEntry->pk = $serial . '_' . ($i-$indexOffset+1) . '_' . $ts;
 					$historyEntry->serial = $serial . '_' . ($i-$indexOffset+1);
 					$historyEntry->time = $ts;
@@ -222,11 +228,10 @@ class favo_Max_Data {
 
 
 		// update device data
-		$devices = new favo_Max_Model_Device();
 		foreach ( $deviceList as $deviceSerial => $dummy ) {
-			$device = $devices->find($deviceSerial);
+			$device = $this->modelDevice->find($deviceSerial);
 			if ( !count($device) ) {
-				$device = $devices->createRow();
+				$device = $this->modelDevice->createRow();
 			}
 			else {
 				$device = $device->current();
@@ -250,7 +255,6 @@ class favo_Max_Data {
 
 		// init some vars
 		$deviceList = array();
-		$history = new favo_Max_Model_Device_History();
 
     	$file = fopen($this->_csvFile, 'r');
     	$counter = 0;
@@ -304,7 +308,7 @@ class favo_Max_Data {
 				
 				// put data into history, blindly
 				try {
-					$historyEntry = $history->createRow();
+					$historyEntry = $this->modelHistory->createRow();
 					$historyEntry->pk = $device['Serial'] . '_' . $ts;
 					$historyEntry->serial = $device['Serial'];
 					$historyEntry->time = $ts;
@@ -323,11 +327,10 @@ class favo_Max_Data {
 		$cubeList = array();
 
 		// update device list in database
-		$devices = new favo_Max_Model_Device();
 		foreach ( $deviceList as $serial => $data ) {
-			$device = $devices->find($serial);
+			$device = $this->modelDevice->find($serial);
 			if ( !count($device) ) {
-				$device = $devices->createRow();
+				$device = $this->modelDevice->createRow();
 			}
 			else {
 				$device = $device->current();
@@ -346,19 +349,17 @@ class favo_Max_Data {
 	}
 
 	public function getDevice ($serial) {
-		$devices = new favo_Max_Model_Device();
-		$device = $devices->find($serial);
+		$device = $this->modelDevice->find($serial);
 		return $device->current()->toArray();
 	}
 	
 	public function getDevices ($type = null, $cubes = array() ) {
-		$devices = new favo_Max_Model_Device();
-		$select = $devices->select();
+		$select = $this->modelDevice->select();
 		if ( $type ) {
 			$select->where('type = ?', $type);
 		}
 		$select->where('cube IN (?)', $cubes);
-		$list = $devices->fetchAll ( $select->order('title') );
+		$list = $this->modelDevice->fetchAll ( $select->order('title') );
 		$return = array();
 		foreach ( $list as $device ) {
 			$return[] = $device->toArray();
@@ -368,15 +369,14 @@ class favo_Max_Data {
 	}
 	
 	public function getHistory ($serial, $from = null, $to = null) {
-		$history = new favo_Max_Model_Device_History();
-		$select = $history->select()->where('serial = ?', $serial)->order('time');
+		$select = $this->modelHistory->select()->where('serial = ?', $serial)->order('time');
 		if ( $from ) {
 			$select->where('time > ?', $from);
 		}
 		if ( $to ) {
 			$select->where('time < ?', $to);
 		}
-		$list = $history->fetchAll ( $select );
+		$list = $this->modelHistory->fetchAll ( $select );
 		$return = array();
 		foreach ( $list as $entry ) {
 			$data = unserialize($entry->data);
@@ -426,8 +426,7 @@ class favo_Max_Data {
 	}
 	
 	public function assignRoom ($serial, $room) {
-		$devices = new favo_Max_Model_Device();
-		$device = $devices->find($serial);
+		$device = $this->modelDevice->find($serial);
 		if ( !count($device) ) {
 			return false;
 		}
@@ -437,14 +436,14 @@ class favo_Max_Data {
 	}
 	
 	public function getCubes () {
-		$devices = new favo_Max_Model_Device();
-		$deviceList = $devices->fetchAll();
+		$deviceList = $this->modelDevice->fetchAll();
 		$cubes = array();
 		foreach ($deviceList as $device) {
 			if ( !isset($cubes[$device->cube]) ) {
 				$cubes[$device->cube] = array (
 												'serial' => $device->cube,
-												'deviceCount' => 0
+												'deviceCount' => 0,
+												'lastUpdate' => 0
 											);
 			}
 

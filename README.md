@@ -1,4 +1,4 @@
-MaxStats
+Max!Stats
 ========
 
 ( Publiziert auf Anfragen in http://bugs.maxbuddy.de/boards/1/topics/218 )
@@ -13,17 +13,16 @@ Max!Buddy Exporte werden als Grundlage genommen und können automatisch über ei
 
 ### Es gibt zwei Statistiken:
 
-- `/index/stats/cubes/<Cube Serial>` – ist die vollständige in welcher Räume und Geräte einzeln gelistet werden
 - Die "hübschere" Statistik ist das Dashboard unter `/index/dashboard/cubes/<Cube Serial>`
-- Ein "Login" mit Hilfe der Cube-Serial gibt es hier: unter `/index/cube` welches auf das Dashboard weiterleitet
+- Die anfängliche und ausführlichere ist `/index/stats/cubes/<Cube Serial>` – hier sind auch alle Geräte einzeln gelistet
+- Ist die Cube-Serial unbekannt, einfach auf die Startseite gehen `/` gehen und den Cube auswählen
 
 Das ganze kann man sich hier einmal ansehen: http://max.t-0.eu/index/dashboard/cubes/JEQ0193016
 
 ### Zur Inbetriebnahme:
 
 1. Konfiguration der Datenbank in `application/configs/application.ini`
-2. Datenbank-Dump einspielen, zu finden unter `library/favo/Max/Model/dump.mysql.sql`
-3. Das `data/upload` Verzeichnis muss Schreiberechtigung durch den Webserver haben, da hier eventuelle Uploads hin geladen werden
+2. Schreibberechtigungen für den `public`-Ordner sicherstellen
 4. Das Zend-Framework 1 wird benötigt (egal welche 1.x Version), bitte separat laden: http://framework.zend.com/downloads/latest#ZF1
 5. `/cube/export` als URL für den Datenexport in Max!Buddy hinterlegen (Z.B. `http://max.t-0.eu/cube/export`)
 6. `/index/cube` aufrufen und den eigenen Cube auswählen um die Statistik zu öffnen
@@ -31,7 +30,7 @@ Das ganze kann man sich hier einmal ansehen: http://max.t-0.eu/index/dashboard/c
 
 ### Allgemeiner Hinweis:
 
-Das gesamte Konstrukt wurde schnell zusammen gestellt und ist (noch) nicht für längere Laufzeiten optimiert. Wichtig war bisher nicht Qualität sondern die schnell zum Ziel zu gelangen ;-)
+Das gesamte Konstrukt wurde schnell zusammen gestellt und ist (noch) nicht für längere Laufzeiten optimiert. Wichtig war bisher nicht die Qualität sondern schnell zum Ziel zu gelangen ;-)
 
 ### Cube-Schnittstelle in PHP:
 

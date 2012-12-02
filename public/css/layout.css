@@ -1,6 +1,9 @@
 body {
 }
 
+/**
+ * room graphs
+ */
 div.graph {
 	position: relative;
 	margin-left: 10px;
@@ -25,6 +28,9 @@ div.graph .plot {
 	margin: 0px 20px 20px 40px;
 }
 
+/**
+ * boxes on top of the dashboard
+ */
 .box {
 	border-radius: 15px;
 	border: 1px solid #000;
@@ -95,6 +101,9 @@ div.graph .plot {
 	background-color: rgba(35,52,86,0.90);
 }
 
+/**
+ * last update information
+ */
 span.updateTime {
 	position: fixed;
 	right: -2px;
@@ -108,6 +117,9 @@ span.updateTime {
 	border-radius: 3px;
 }
 
+/**
+ * color toggle for warm/cold text indicators
+ */
 .warm {
 	color: #f00;
 	font-weight: bold;
@@ -118,6 +130,9 @@ span.updateTime {
 	font-weight: bold;
 }
 
+/**
+ * timeframe selection box at the stats
+ */
 div.timeframe {
 	position: absolute;
 	right: 10px;
@@ -125,6 +140,20 @@ div.timeframe {
 	text-align: right;
 }
 
+/**
+ * timeframe selection at the dashboard
+ */
+.box.timeselection {
+	padding: 20px 0 0 0;
+}
+
+.box.timeselection a {
+	font-size: 10px;
+}
+
+/**
+ * generic box container at the top
+ */
 div#overview {
 	position: fixed;
 	top: 0;
@@ -134,14 +163,6 @@ div#overview {
 	width: 100%;
 	text-align: center;
 	margin-bottom: 25px;
-}
-
-.box.timeselection {
-	padding: 20px 0 0 0;
-}
-
-.box.timeselection a {
-	font-size: 10px;
 }
 
 /**
@@ -159,7 +180,7 @@ div#overview {
 	width: auto !important;
 }
 
-/* iPhone [portrait + landscape] */
+/* iPhone adjustments */
 @media only screen and (max-device-width: 480px) {
 	div#overview {
 		position: relative;

@@ -30,12 +30,22 @@ class IndexController extends Zend_Controller_Action {
     }
 
     public function indexAction() {
+    	$uploadDir = APPLICATION_PATH . '/../public/data/upload';
+		if ( !file_exists($uploadDir) ) {
+			if ( !mkdir($uploadDir, 0777, true) ) {
+				throw new Exception("could not create upload directory at {$uploadDir}");
+			}
+		}
+
+		if ( !is_writable($uploadDir) ) {
+			throw new Exception("missing write permission to {$uploadDir}");
+		}
 
     	$form = new Zend_Form();
     	$form->setAttrib('enctype', 'multipart/form-data')->setMethod('POST');
 		$file = new Zend_Form_Element_File('file');
-		$file->setLabel('Max-Buddy-Export:')
-			->setDestination( APPLICATION_PATH . '/../data/upload')
+		$file->setLabel('Log-Upload:')
+			->setDestination($uploadDir)
 			->addValidator('Count', false, 1)
 			->addValidator('Size', false, 1024*1024);
 
@@ -44,34 +54,11 @@ class IndexController extends Zend_Controller_Action {
 		$this->view->form = $form;
 
 
-/*
-    	$form = new Zend_Form();
-    	$form->setAttrib('enctype', 'multipart/form-data')->setMethod('POST');
-		$file = new Zend_Form_Element_File('file');
-		$file->setLabel('LogView-Export:')
-			->setDestination( APPLICATION_PATH . '/../data/upload')
-			->addValidator('Count', false, 1)
-			->addValidator('Size', false, 1024*1024);
-
-		$submit = new Zend_Form_Element_Submit('submit');
-		$type = new Zend_Form_Element_Hidden('type');
-		$type->setValue('logview');
-
-		$cube = new Zend_Form_Element_Hidden('cube');
-		$cube->setValue('JEQ0193016');
-
-		$serial = new Zend_Form_Element_Hidden('serial');
-		$serial->setValue('ash2200');
-
-
-		$form->addElements(array($file, $submit, $type, $cube, $serial));
-		$this->view->form2 = $form;
-		
-*/
 		if ( $form->isValid($form->getValues()) && $form->file->receive()) {
 			$uploadedFile = $file->getDestination() . '/' . $form->getValue('file');
 			if ( $form->getValue('file') && file_exists($uploadedFile) ) {
-			
+				$cubes = array();
+
 				switch ( $this->getRequest()->getParam('type') ) {
 					// LogView temp history
 					case 'logview':
@@ -79,7 +66,7 @@ class IndexController extends Zend_Controller_Action {
 						$serial = $this->getRequest()->getParam('serial');
 						$title = $this->getRequest()->getParam('title');
 						$this->getMax()->importLogView($uploadedFile, $cube, $serial, $title);
-						$this->_redirect('/index/stats/cubes/' . $cube);
+						$cubes[] = $cube;
 						break;
 					
 					// OpenWeather.org upload
@@ -88,16 +75,17 @@ class IndexController extends Zend_Controller_Action {
 						$serial = $this->getRequest()->getParam('serial');
 						$title = $this->getRequest()->getParam('title');
 						$this->getMax()->importOpenWeather($uploadedFile, $cube, $serial, $title);
-						$this->_redirect('/index/stats/cubes/' . $cube);
+						$cubes[] = $cube;
 						break;
 				
 					// max buddy export is default
 					default:
 						$cubes = $this->getMax()->importFile($uploadedFile);
-						unlink ($uploadedFile);
-						$this->_redirect('/index/stats/cubes/' . join(',',$cubes));
 						break;
 				}
+
+				unlink ($uploadedFile);
+				$this->_redirect('/index/dashboard/cubes/' . join(',',$cubes));
 			}
 		}
 		else {
@@ -176,6 +164,7 @@ class IndexController extends Zend_Controller_Action {
 	}
 	
 	public function configAction () {
+
 	    $this->_helper->contextSwitch()->initContext('json');
 	    
 	    switch ( $this->getRequest()->getParam('cmd') ) {
