@@ -31,7 +31,7 @@ div.graph .plot {
 	background-color: rgba(35,35,35,0.90);
 	padding: 10px;
 	font-size: 10px;
-	width: 160px;
+	width: 150px;
 	height: 110px;
 	overflow: hidden;
 	margin: 10px;
@@ -123,4 +123,34 @@ div.timeframe {
 	right: 10px;
 	top: 50px;
 	text-align: right;
+}
+
+div#overview {
+	position: fixed;
+	top: 0;
+	z-index: 20000;
+	background-color: rgba(128, 128, 128, 0.75);
+	border-bottom: 1px solid rgb(99, 99, 99);
+	width: 100%;
+	text-align: center;
+	margin-bottom: 25px;
+}
+
+.box.timeselection {
+	padding: 20px 0 0 0;
+}
+
+.box.timeselection a {
+	font-size: 10px;
+}
+
+/* iPhone [portrait + landscape] */
+@media only screen and (max-device-width: 480px) {
+	div#overview {
+		position: relative;
+	}
+	
+	body {
+		padding-top: 0 !important;
+	}
 }

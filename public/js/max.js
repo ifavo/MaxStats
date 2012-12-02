@@ -548,3 +548,12 @@ var tsEnd = 0;
 function setEndTime (ts) {
 	tsEnd = ts;
 }
+
+function isiPhone(){
+    return (
+        //Detect iPhone
+        (navigator.platform.indexOf("iPhone") != -1) ||
+        //Detect iPod
+        (navigator.platform.indexOf("iPod") != -1)
+    );
+}
