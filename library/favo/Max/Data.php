@@ -19,6 +19,98 @@ class favo_Max_Data {
 		}
 	}
 
+	/**
+	 * import web service post data as new cube status
+	 * @param array $status the post data
+	 * @return array list of cubes found in the status
+	 */
+	public function importStatus ($status) {
+		// init some vars
+		$deviceList = array();
+		$history = new favo_Max_Model_Device_History();
+
+		// convert into a nice readable array
+		$data = array();
+		$keys = array_keys($status);
+
+		foreach ($keys as $index => $key) {
+			$subkeys = explode('_', $key);
+
+			// could be recursive, but for now we leave it like this …
+			if ( 3 == count($subkeys) ) {
+				$data[$subkeys[0]][$subkeys[1]][$subkeys[2]] = $status[$key];
+			}
+			else if ( 2 == count($subkeys) ) {
+				$data[$subkeys[0]][$subkeys[1]] = $status[$key];
+			}
+			else {
+				$data[$subkeys[0]] = $status[$key];
+			}
+		}
+		$ts = time();
+
+		// turn a room into a device
+		foreach ( $data['Room'] as $room ) {
+			$id = $data['Cube']['Serial'] . '_Room_' . $room['ID'];
+			$room['Type'] = 'Room';
+			$room['Serial'] = $id;
+			$data['Device'][] = $room;
+		}
+
+		// collect device data
+		foreach ( $data['Device'] as $device ) {
+			$device['Name'] = utf8_encode($device['Name']);
+
+			// assign cube serial for grouping
+			$device['Cube'] = $data['Cube']['Serial'];
+
+			// overwrite device data to have always the latest entry in memory
+			$deviceList[$device['Serial']] = $device;
+			
+			// put data into history, blindly
+			try {
+				$historyEntry = $history->createRow();
+				$historyEntry->pk = $device['Serial'] . '_' . $ts;
+				$historyEntry->serial = $device['Serial'];
+				$historyEntry->time = $ts;
+				$historyEntry->data = serialize($device);
+				$historyEntry->save();
+			}
+			catch (Exception $e) {
+				// ignore
+			}	
+		}
+
+
+		// cube list to be returned
+		$cubeList = array();
+
+		// update device list in database
+		$devices = new favo_Max_Model_Device();
+		foreach ( $deviceList as $serial => $deviceData ) {
+			$device = $devices->find($serial);
+			if ( !count($device) ) {
+				$device = $devices->createRow();
+			}
+			else {
+				$device = $device->current();
+			}
+			
+			if ( $deviceData['RoomID'] ) {
+				$device->roomAssignment = $data['Cube']['Serial'] . '_Room_' . $deviceData['RoomID'];
+			}
+			
+			$device->serial = $deviceData['Serial'];
+			$device->type = $deviceData['Type'];
+			$device->title = $deviceData['Name'];
+			$device->cube = $deviceData['Cube'];
+			$device->lastUpdate = new Zend_Db_Expr('NOW()');
+			$device->save();
+		}
+		
+		return array($data['Cube']['Serial']);
+	}
+
 	public function importFile ($csv) {
 		$this->_csvFile = $csv;
 

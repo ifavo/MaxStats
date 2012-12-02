@@ -194,9 +194,10 @@ function updateRoomPlot(roomSerial) {
 			deviceCount++;
 			for ( var i in building.rooms[roomSerial].data[deviceType][deviceSerial] ) {
 				var row = building.rooms[roomSerial].data[deviceType][deviceSerial][i];
-				var ts = Number(row.time) * 1000;
+				row.time = Number(row.time);
+				var ts = row.time * 1000;
 				if ( ts > tsStart ) {
-					tsStart = row.time; // latest data timestamp to get diff from
+					tsStart = row.time * 1000; // latest data timestamp to get diff from
 					tsEnd = row.time; // latest update timestamp
 				}
 				
