@@ -9,7 +9,6 @@ Max!Buddy Exporte werden als Grundlage genommen und können automatisch über ei
 - Neue Geräte werden automatisch erkannt und hinzugefügt.
 - Raumzuordnungen geschehen automatisch und werden bei jedem Import aktualisiert
 - Eine Installation kann für mehrere Cubes (User) verwendet werden, durch die automatisierte Cube-Zuweisung kann man also eine Installation mit anderen "teilen" :-)
-- Die HTML Ausgabe ist für meinen Chrome unter OSX optimiert, andere Browser laufen eventuell nicht so gut.
 
 ### Es gibt zwei Statistiken:
 
