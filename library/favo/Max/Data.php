@@ -441,8 +441,19 @@ class favo_Max_Data {
 		$deviceList = $devices->fetchAll();
 		$cubes = array();
 		foreach ($deviceList as $device) {
-			$cubes[$device->cube] = true;
+			if ( !isset($cubes[$device->cube]) ) {
+				$cubes[$device->cube] = array (
+												'serial' => $device->cube,
+												'deviceCount' => 0
+											);
+			}
+
+			$ts = strtotime($device->lastUpdate);
+			if ( $ts > $cubes[$device->cube]['lastUpdate']) {
+				$cubes[$device->cube]['lastUpdate'] = $ts;
+			}
+			$cubes[$device->cube]['deviceCount']++;
 		}
-		return array_keys($cubes);
+		return $cubes;
 	}
 }

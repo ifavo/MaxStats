@@ -187,12 +187,24 @@ class IndexController extends Zend_Controller_Action {
 	
 	public function cubeAction () {
     	$form = new Zend_Form();
-		$cubes = new Zend_Form_Element_Select('cubes');
+		$cubes = new Zend_Form_Element_Radio('cubes');
 		$cubes->setLabel('Cube(s):');
 		
 		$cubeList = $this->getMax()->getCubes();
-		foreach ($cubeList as $cubeSerial) {
-			$cubes->addMultiOption($cubeSerial, $cubeSerial);
+		$now = time();
+		foreach ($cubeList as $cubeData) {
+			$lastUpdate = $now - $cubeData['lastUpdate'];
+			if ( $lastUpdate < 120 ) {
+				$lastUpdate = "{$lastUpdate} Sekunden";
+			}
+			else if ( $lastUpdate < 3600 ) {
+				$lastUpdate = round($lastUpdate/60) . " Minuten";
+			}
+			else {
+				$lastUpdate = round($lastUpdate/3600) . " Stunden";
+			}
+			$title = " Serial: {$cubeData['serial']} | Geräte: {$cubeData['deviceCount']} | Letztes Update: vor {$lastUpdate}";
+			$cubes->addMultiOption($cubeData['serial'], $title);
 		}
 		
 		$submit = new Zend_Form_Element_Submit('submit');

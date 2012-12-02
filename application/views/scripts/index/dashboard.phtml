@@ -53,7 +53,11 @@
 <script>
 var updateQueue = [];
 var timeToDisplay = parseInt('<?php echo Zend_Controller_Front::getInstance()->getRequest()->getParam('hours') ?>');
-var cubes = parseInt('<?php echo Zend_Controller_Front::getInstance()->getRequest()->getParam('cubes') ?>');
+var cubes = '<?php echo Zend_Controller_Front::getInstance()->getRequest()->getParam('cubes') ?>';
+var specialDevices = [];
+if ( cubes == 'JEQ0193016' ) {
+	specialDevices.push('ash2200_1');
+}
 timeToDisplay = (!timeToDisplay) ? 24 : timeToDisplay;
 var tsStart = (new Date().getTime() - (timeToDisplay*60*60*1000))/1000;
 var tsEnd = tsStart;
@@ -121,8 +125,12 @@ function fetchUpdate () {
 			serials.push(room.shutter[j].serial);
 		}
 
-		// outside temperature
-//		serials.push('ash2200_1');
+		// special devices for the current view, e.g. outside temperature
+		if ( specialDevices ) {
+			for ( var j in specialDevices ) {
+				serials.push(specialDevices[j]);
+			}
+		}
 
 		updateQueue.push({serial: serials, from: tsStart});
 	}
@@ -394,6 +402,11 @@ function updateRoomPlot(roomSerial) {
 	}
 
 
+	if ( roomSerial == "legend" || !dataPoints.tempMeasured.length ) {
+		return;
+	}
+
+
 	// room box
 	// no measured temp but outside temp? copy it over for outside information!
 	if ( !dataPoints.tempMeasured.length && dataPoints.outsideTemperature.length > 0 ) {
@@ -401,7 +414,7 @@ function updateRoomPlot(roomSerial) {
 	}
 
 	$('.status[serial='+roomSerial+']').parent().removeClass('directionUp').removeClass('directionDown');
-	if ( dataPoints.tempMeasured.length > 50 ) {
+	if ( dataPoints.tempMeasured.length > 10 ) {
 		var tempDiff = 0.2;
 		if ( (dataPoints.tempMeasured[dataPoints.tempMeasured.length-1][1] - dataPoints.tempMeasured[dataPoints.tempMeasured.length-10][1]) >= tempDiff ) {
 			$('.status[serial='+roomSerial+']').parent().addClass('directionUp');
@@ -409,11 +422,14 @@ function updateRoomPlot(roomSerial) {
 		else if ( (dataPoints.tempMeasured[dataPoints.tempMeasured.length-10][1] - dataPoints.tempMeasured[dataPoints.tempMeasured.length-1][1]) >= tempDiff ) {
 			$('.status[serial='+roomSerial+']').parent().addClass('directionDown');
 		}
+	}
+
+	// latest entry
+	$('.status[serial='+roomSerial+']').find('.tempCurrent').text (  (dataPoints.tempMeasured) ? dataPoints.tempMeasured[dataPoints.tempMeasured.length-1][1] : dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
+	$('.status[serial='+roomSerial+']').find('.tempTarget').text ( dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
+
 	
-		// latest entry
-		$('.status[serial='+roomSerial+']').find('.tempCurrent').text (  (dataPoints.tempMeasured) ? dataPoints.tempMeasured[dataPoints.tempMeasured.length-1][1] : dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
-		$('.status[serial='+roomSerial+']').find('.tempTarget').text ( dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
-	
+	if ( dataPoints.tempMeasured.length > 40 ) {
 		// make the latest beautiful
 		var latest = [];
 		latest.push(dataPoints.tempMeasured[dataPoints.tempTarget.length-10][1]);
@@ -433,32 +449,32 @@ function updateRoomPlot(roomSerial) {
 		else {
 			$('.status[serial='+roomSerial+']').find('.tempLatest').html('&nbsp;');
 		}
+	}
 	
-		// valve opening
-		var valveList = [];
-		$.each(valveStatus, function (k,v) {
-			if ( v > 30 ) {
-				v = '<span class="warm">' + v + '%</span>';
-			}
-			else {
-				v = v + '%';
-			}
-			valveList.push(v);
-		});
-		if ( valveList.length ) {
-			$('.status[serial='+roomSerial+']').find('.valveOpening').html ( ((valveList.length > 1) ? 'Ventile: ' : 'Ventil: ') + valveList.join(' | ') );
+	// valve opening
+	var valveList = [];
+	$.each(valveStatus, function (k,v) {
+		if ( v > 30 ) {
+			v = '<span class="warm">' + v + '%</span>';
 		}
 		else {
-			$('.status[serial='+roomSerial+']').find('.valveOpening').html('&nbsp;');
+			v = v + '%';
 		}
+		valveList.push(v);
+	});
+	if ( valveList.length ) {
+		$('.status[serial='+roomSerial+']').find('.valveOpening').html ( ((valveList.length > 1) ? 'Ventile: ' : 'Ventil: ') + valveList.join(' | ') );
+	}
+	else {
+		$('.status[serial='+roomSerial+']').find('.valveOpening').html('&nbsp;');
+	}
 		
-		// window status
-		if ( dataPoints.shutter.length && dataPoints.shutter[dataPoints.shutter.length-1][1] ) {
-			$('.status[serial='+roomSerial+']').find('.windowOpening').text('Fenster offen');
-		}
-		else {
-			$('.status[serial='+roomSerial+']').find('.windowOpening').html('&nbsp;');
-		}
+	// window status
+	if ( dataPoints.shutter.length && dataPoints.shutter[dataPoints.shutter.length-1][1] ) {
+		$('.status[serial='+roomSerial+']').find('.windowOpening').text('Fenster offen');
+	}
+	else {
+		$('.status[serial='+roomSerial+']').find('.windowOpening').html('&nbsp;');
 	}
 }
 
