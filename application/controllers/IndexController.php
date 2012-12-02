@@ -184,8 +184,8 @@ class IndexController extends Zend_Controller_Action {
 		foreach ($cubeList as $cubeData) {
 			$lastUpdate = $now - $cubeData['lastUpdate'];
 
-			// only add cubes that have been updated in the last six hours
-			if ( $lastUpdate > (6*3600) ) {
+			// only add cubes that have been updated in the last n hours
+			if ( $lastUpdate > (1*3600) ) {
 				continue;
 			}
 
