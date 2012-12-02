@@ -155,6 +155,10 @@ div#overview {
 	display: none;
 }
 
+.legendColorBox > div > div {
+	width: auto !important;
+}
+
 /* iPhone [portrait + landscape] */
 @media only screen and (max-device-width: 480px) {
 	div#overview {
