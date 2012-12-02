@@ -89,10 +89,10 @@ $(function() {
 	// build a graph for each room
 	for ( var i in building.rooms ) {
 		var room = building.rooms[i];
-		var container = $('<div>').addClass('graph').attr('serial', room.serial).addClass('graph').css({width: '100%', height: 300});
+		var container = $('<div>').addClass('graph').attr('serial', room.serial).addClass('graph').css({width: '100%', height: (isiPhone()) ? 480 : 300});
 		$('<h2>').addClass('rotate').text(room.title).appendTo(container);
 		$('body').append(container);
-		$('<div>').addClass('plot').css({width: container.width()-60, height: 250}).appendTo(container);
+		$('<div>').addClass('plot').css({width: container.width()-60, height: (isiPhone()) ? 450 : 250}).appendTo(container);
 		
 		$('.status[serial='+room.serial+']').find('.tempCurrent').spin(spinnerOptions);
 	}
@@ -108,7 +108,7 @@ $(function() {
 	}
 
 	renderRoom({result:[{device:{type:'Room',serial:'legend'}}]});
-
+	$('body').scrollTo(1,0);
 	fetchUpdate();
 });
 

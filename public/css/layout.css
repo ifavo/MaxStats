@@ -189,4 +189,9 @@ div#overview {
 	body {
 		padding-top: 0 !important;
 	}
+
+	div.graph h2.rotate {
+		width: 450px;
+		height: 450px;
+	}
 }
