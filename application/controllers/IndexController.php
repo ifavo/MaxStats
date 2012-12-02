@@ -180,12 +180,20 @@ class IndexController extends Zend_Controller_Action {
 		$cubes->setLabel('Cube(s):');
 		
 		$cubeList = $this->getMax()->getCubes();
+		
+		// one cube? just forward to the dashboard!
+		if ( sizeof($cubeList) == 1 ) {
+			$cube = array_shift($cubeList);
+			$this->_redirect('/index/dashboard/cubes/' . $cube['serial']);
+			return;
+		}
+
 		$now = time();
 		foreach ($cubeList as $cubeData) {
 			$lastUpdate = $now - $cubeData['lastUpdate'];
 
 			// only add cubes that have been updated in the last n hours
-			if ( $lastUpdate > (1*3600) ) {
+			if ( !$this->getRequest()->getParam('outdated') && $lastUpdate > (1*3600) ) {
 				continue;
 			}
 
@@ -201,8 +209,15 @@ class IndexController extends Zend_Controller_Action {
 			$title = " Serial: {$cubeData['serial']} | Geräte: {$cubeData['deviceCount']} | Letztes Update: vor {$lastUpdate}";
 			$cubes->addMultiOption($cubeData['serial'], $title);
 		}
-		
+
+		// auto select first cube in the list
+		if ( sizeof($cubeList) ) {
+			$firstEntry = array_shift($cubeList);
+			$cubes->setValue($firstEntry['serial']);
+		}
+
 		$submit = new Zend_Form_Element_Submit('submit');
+		$submit->setLabel('Cube laden');
 		$form->addElements(array($cubes, $submit));
 		$form->setAction('/index/dashboard')->setMethod('GET');
 		EasyBib_Form_Decorator::setFormDecorator($form, EasyBib_Form_Decorator::BOOTSTRAP, 'submit');
