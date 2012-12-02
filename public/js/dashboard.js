@@ -215,7 +215,7 @@ function updateRoomPlot(roomSerial) {
 											data: dataPoints.tempMode3,
 											lines: { show: true, fill: true, fillColor: 'rgba(255, 167, 167, 0.3)', lineWidth: 0 },
 											yaxis: 2,
-											label: "Manuell-Modus",
+											label: "Manueller-Modus",
 											color: 'rgba(77, 167, 77, 0.3)',
 											tickFormatter: boolFormatter
 										},
@@ -288,6 +288,7 @@ function updateRoomPlot(roomSerial) {
 	}
 	else {
 		plots[roomSerial].setData(plotData);
+		plots[roomSerial].setupGrid();
 		plots[roomSerial].draw();
 	}
 
