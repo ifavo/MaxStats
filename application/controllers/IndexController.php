@@ -100,6 +100,9 @@ class IndexController extends Zend_Controller_Action {
 				}
 			}
 		}
+		else {
+			$this->_forward('cube');
+		}
     }
     
     public function historyAction () {
