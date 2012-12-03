@@ -408,7 +408,7 @@ class favo_Max_Data {
 					
 					// round measured temp in case it has too many digits after the decimal point
 					if ( $column == 'MeasuredTemp' ) {
-						$data[$column] = round($data[$column], 2);
+						$data[$column] = round($data[$column], 1);
 					}
 					
 					// ignore zero values for humidity
