@@ -329,9 +329,9 @@ function updateRoomPlot(roomSerial) {
 	if ( dataPoints.tempMeasured.length > 40 ) {
 		// make the latest beautiful
 		var latest = [];
-		latest.push(dataPoints.tempMeasured[dataPoints.tempTarget.length-10][1]);
-		latest.push(dataPoints.tempMeasured[dataPoints.tempTarget.length-20][1]);
-		latest.push(dataPoints.tempMeasured[dataPoints.tempTarget.length-30][1]);
+		latest.push(dataPoints.tempMeasured[dataPoints.tempMeasured.length-10][1]);
+		latest.push(dataPoints.tempMeasured[dataPoints.tempMeasured.length-20][1]);
+		latest.push(dataPoints.tempMeasured[dataPoints.tempMeasured.length-30][1]);
 	
 		var opacitySteps = 1/(latest.length+1);
 		var opacityValue = 1.0;
