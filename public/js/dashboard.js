@@ -21,7 +21,7 @@ function fetchUpdate () {
 			}
 		}
 
-		updateQueue.push({serial: serials, from: Math.floor((tsStart+(tsOffset*1000))/1000)});
+		updateQueue.push({serial: serials, from: Math.floor(tsStart/1000)});
 	}
 	
 	workQueue();
@@ -108,23 +108,29 @@ function updateRoomPlot(roomSerial) {
 						if ( row.tempMeasured ) {
 							hasMeasuredData = true;
 						}
-						row.tempTarget = parseFloat(row.tempTarget);
-						row.tempMeasured = parseFloat(row.tempMeasured);
-						dataPoints.tempTarget.push([ts, row.tempTarget]);
-						dataPoints.tempMeasured.push([ts, row.tempMeasured]);
 						
-						if ( row.tempTarget > tempMax ) {
-							tempMax = row.tempTarget;
+						if ( row.tempTarget ) {
+							row.tempTarget = parseFloat(row.tempTarget);
+							dataPoints.tempTarget.push([ts, row.tempTarget]);
+							if ( row.tempTarget > tempMax ) {
+								tempMax = row.tempTarget;
+							}
+							if ( row.tempTarget < tempMin ) {
+								tempMin = row.tempTarget;
+							}
 						}
-						if ( row.tempMeasured > tempMax ) {
-							tempMax = row.tempMeasured;
+
+						if ( row.tempMeasured ) {
+							row.tempMeasured = parseFloat(row.tempMeasured);
+							dataPoints.tempMeasured.push([ts, row.tempMeasured]);
+							if ( row.tempMeasured > tempMax ) {
+								tempMax = row.tempMeasured;
+							}
+							if ( row.tempMeasured < tempMin ) {
+								tempMin = row.tempMeasured;
+							}
 						}
-						if ( row.tempTarget < tempMin ) {
-							tempMin = row.tempTarget;
-						}
-						if ( row.tempMeasured < tempMin ) {
-							tempMin = row.tempMeasured;
-						}
+						
 						
 						switch ( row.mode ) {
 							case 'Auto':
@@ -300,7 +306,7 @@ function updateRoomPlot(roomSerial) {
 		dataPoints.tempMeasured = dataPoints.tempTarget = dataPoints.outsideTemperature;
 	}
 
-	if ( roomSerial == "legend" || !dataPoints.tempMeasured.length ) {
+	if ( roomSerial == "legend" || (!dataPoints.tempMeasured.length && !dataPoints.tempTarget.length) ) {
 		return;
 	}
 
@@ -316,7 +322,7 @@ function updateRoomPlot(roomSerial) {
 	}
 
 	// latest entry
-	$('.status[serial='+roomSerial+']').find('.tempCurrent').text (  (dataPoints.tempMeasured) ? dataPoints.tempMeasured[dataPoints.tempMeasured.length-1][1] : dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
+	$('.status[serial='+roomSerial+']').find('.tempCurrent').text (  (dataPoints.tempMeasured && dataPoints.tempMeasured.length) ? dataPoints.tempMeasured[dataPoints.tempMeasured.length-1][1] : dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
 	$('.status[serial='+roomSerial+']').find('.tempTarget').text ( dataPoints.tempTarget[dataPoints.tempTarget.length-1][1] );
 
 	
